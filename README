@@ -1,1 +1,7 @@
-C++ binder for JavaScript (Mozilla Spider monkey)
+A JavaScript/C++ bridge using Mozilla SpiderMonkey 24.
+
+Author:
+Hubert Figuiere <hub@figuiere.net>
+
+License:
+MPL 2.0 - see LICENSE file.
