@@ -1,0 +1,31 @@
+AC_INIT(js++, 0.0.1)
+AC_PREREQ(2.59)
+AC_CONFIG_SRCDIR(README)
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
+AM_MAINTAINER_MODE
+m4_ifndef([AM_SILENT_RULES], [m4_define([AM_SILENT_RULES],[])])
+AM_SILENT_RULES([yes])
+AC_CONFIG_HEADER(config.h)
+AC_CONFIG_MACRO_DIR(m4)
+
+pkgconfigdir='${libdir}/pkgconfig'
+AC_SUBST(pkgconfigdir)
+
+AC_PROG_CXX
+AC_GNU_SOURCE
+
+AC_PROG_LIBTOOL
+AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
+
+AC_LANG_CPLUSPLUS
+AC_LANG_COMPILER_REQUIRE
+
+PKG_CHECK_MODULES(MOZJS, [mozjs-24])
+
+AC_CONFIG_FILES([
+Makefile
+js++/Makefile
+])
+
+
+AC_OUTPUT
