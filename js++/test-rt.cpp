@@ -10,14 +10,6 @@
 #include "runtime.hpp"
 #include "context.hpp"
 
-/* The error reporter callback. */
-void reportError(JSContext *cx, const char *message, JSErrorReport *report) {
-  fprintf(stderr, "%s:%u:%s\n",
-          report->filename ? report->filename : "[no filename]",
-          (unsigned int) report->lineno,
-          message);
-}
-
 int main (int argc, char **argv)
 {
   // get runtime
@@ -30,7 +22,6 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  JS_SetErrorReporter(ctx->js(), reportError);
   ctx->initialize();
   // execute these:
   JS::Value val;

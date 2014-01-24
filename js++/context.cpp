@@ -31,8 +31,20 @@ Context::Context(const Runtime* rt)
 {
 }
 
+/* The error reporter callback. */
+static void reportError(JSContext *cx, const char *message,
+                        JSErrorReport *report)
+{
+  fprintf(stderr, "%s:%u:%s\n",
+          report->filename ? report->filename : "[no filename]",
+          (unsigned int) report->lineno,
+          message);
+}
+
 bool Context::initialize()
 {
+  JS_SetErrorReporter(_jsctx, reportError);
+
   /* Enter a request before running anything in the context */
   JSAutoRequest ar(_jsctx);
 
