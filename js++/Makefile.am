@@ -2,11 +2,12 @@
 AM_CPPFLAGS = @MOZJS_CFLAGS@
 AM_LDFLAGS = @MOZJS_LIBS@
 
-check_PROGRAMS = js++-test
+check_PROGRAMS = js++-test-rt
 
+TESTS = js++-test-rt
 
-js___test_SOURCES = test.cpp
-js___test_LDADD = libjs++.la
+js___test_rt_SOURCES = test-rt.cpp
+js___test_rt_LDADD = libjs++.la
 
 lib_LTLIBRARIES = libjs++.la
 

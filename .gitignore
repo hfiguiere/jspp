@@ -19,8 +19,12 @@ libtool
 ltmain.sh
 missing
 stamp-h1
+test-driver
 aclocal.m4
 autom4te.cache/
-js++/js++-test
+js++/js++-test-rt
+js++/js++-test-rt.log
+js++/js++-test-rt.trs
+js++/test-suite.log
 m4/libtool.m4
 m4/lt*.m4
