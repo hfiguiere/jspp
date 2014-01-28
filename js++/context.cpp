@@ -62,7 +62,6 @@ bool Context::initialize()
     return false;
   }
 
-  /* Your application code here. This may include JSAPI calls to create your own custom JS objects and run scripts. */
   return true;
 }
 
@@ -72,6 +71,19 @@ bool Context::evaluateScript(const char* script, JS::Value* val)
   return JS_EvaluateScript(_jsctx, _global,
                            script, strlen(script),
                            "inline", 1, val);
+}
+
+
+template <>
+void ToJSArg<int>(JS::Value *val, const int & arg)
+{
+  *val = INT_TO_JSVAL(arg);
+}
+
+template <>
+void ToJSArg<double>(JS::Value *val, const double & arg)
+{
+  *val = DOUBLE_TO_JSVAL(arg);
 }
 
 }

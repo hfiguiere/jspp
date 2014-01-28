@@ -1,0 +1,60 @@
+/*
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+#include <memory>
+#include <jsapi.h>
+
+#include "runtime.hpp"
+#include "context.hpp"
+
+int main (int argc, char **argv)
+{
+  // get runtime
+  jspp::Runtime& rt = jspp::Runtime::getRuntime();
+
+  // get context
+  std::unique_ptr<jspp::Context> ctx(rt.newContext());
+  if (!ctx) {
+    fprintf(stderr, "failed to get context");
+    return 1;
+  }
+
+  ctx->initialize();
+  // execute these:
+  JS::Value val;
+
+
+  if (!ctx->evaluateScript("function plustwo(v) { return v+2; }", &val)) {
+    fprintf(stderr, "Evaluate failed\n");
+    return 1;
+  }
+
+  printf("calling plustwo(40)\n");
+  ctx->call<1>("plustwo", &val, 40);
+
+  if (!JSVAL_IS_NUMBER(val)) {
+    fprintf(stderr, "not a number\n");
+    return 1;
+  }
+
+  if (JSVAL_TO_INT(val) != 42) {
+    fprintf(stderr, "wrong value. Expected 4, got %d\n", JSVAL_TO_INT(val));
+    return 1;
+  }
+
+  ctx->call<1>("plustwo", &val, 40.0);
+  if (!JSVAL_IS_NUMBER(val)) {
+    fprintf(stderr, "not a number\n");
+    return 1;
+  }
+
+  if (JSVAL_TO_INT(val) != 42) {
+    fprintf(stderr, "wrong value. Expected 4, got %d\n", JSVAL_TO_INT(val));
+    return 1;
+  }
+
+  return 0;
+}
