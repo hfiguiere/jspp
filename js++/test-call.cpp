@@ -26,7 +26,8 @@ int main (int argc, char **argv)
   ctx->initialize();
 
   JS::Value val;
-
+  int32_t num;
+  double fnum;
 
   /* TEST 1: function call with one int argument */
   if (!ctx->evaluateScript("function plustwo(v) { return v+2; }", &val)) {
@@ -47,22 +48,23 @@ int main (int argc, char **argv)
     return 1;
   }
 
-  int32_t num = JSVAL_TO_INT(val);
+  num = ctx->FromJSArg<int32_t>(val);
   if (num != 42) {
     TEST_OUT("Wrong value. Expected 42, got %d", num);
     return 1;
   }
 
   /* TEST 2: function call with one float argument */
-  TEST_OUT("calling plustwo(40.0)");
-  ctx->call<1>("plustwo", &val, 40.0);
+  TEST_OUT("calling plustwo(40.1)");
+  ctx->call<1>("plustwo", &val, 40.1);
   if (!JSVAL_IS_NUMBER(val)) {
     TEST_OUT("not a number");
     return 1;
   }
 
-  if (JSVAL_TO_INT(val) != 42) {
-    TEST_OUT("Wrong value. Expected 42, got %d", JSVAL_TO_INT(val));
+  fnum = ctx->FromJSArg<double>(val);
+  if (fnum != 42.1) {
+    TEST_OUT("Wrong value. Expected 42.1, got %lf", fnum);
     return 1;
   }
 

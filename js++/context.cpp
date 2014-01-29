@@ -127,4 +127,22 @@ std::string Context::FromJSArg<std::string>(const JS::Value &val) const
   return s;
 }
 
+template <>
+double Context::FromJSArg<double>(const JS::Value &val) const
+{
+  if(!JSVAL_IS_NUMBER(val)) {
+    return 0.0f;
+  }
+  return JSVAL_TO_DOUBLE(val);
+}
+
+template <>
+int32_t Context::FromJSArg<int32_t>(const JS::Value &val) const
+{
+  if(!JSVAL_IS_NUMBER(val)) {
+    return 0;
+  }
+  return JSVAL_TO_INT(val);
+}
+
 } // ns jspp
