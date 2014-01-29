@@ -84,5 +84,23 @@ int main (int argc, char **argv)
     return 1;
   }
 
+  /* TEST 4: function call with two arguments */
+  if (!ctx->evaluateScript("function addtwo(a,b) { return a+b; }", &val)) {
+    TEST_OUT("Evaluate failed");
+    return 1;
+  }
+
+  TEST_OUT("calling addtwo()");
+  ctx->call<2>("addtwo", &val, 20, 22);
+  if (!JSVAL_IS_NUMBER(val)) {
+    TEST_OUT("not a number");
+    return 1;
+  }
+
+  if (JSVAL_TO_INT(val) != 42) {
+    TEST_OUT("Wrong value. Expected 42, got %d", JSVAL_TO_INT(val));
+    return 1;
+  }
+
   return 0;
 }

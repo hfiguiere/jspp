@@ -34,8 +34,11 @@ private:
   void pushArg(JS::Value *args, const Arg & arg) const;
 
   template <typename Arg, typename... Args>
-  void pushArg(JS::Value *args, size_t count,
+  void pushArgs(JS::Value *args, size_t count,
                const Arg & arg, const Args&... otherArgs) const;
+  template <typename Arg>
+  void pushArgs(JS::Value *args, size_t count,
+                const Arg & arg1) const;
 
   template <typename T>
   void ToJSArg(JS::Value *val, const T & arg) const;
@@ -45,13 +48,20 @@ private:
 };
 
 template <typename Arg, typename... Args>
-void Context::pushArg(JS::Value *args, size_t count,
+void Context::pushArgs(JS::Value *args, size_t count,
                       const Arg & arg1, const Args&... otherArgs) const
 {
   pushArg(args, arg1);
   if (count > 1) {
-    pushArg(args + 1, count - 1, otherArgs...);
+    pushArgs(args + 1, count - 1, otherArgs...);
   }
+}
+
+template <typename Arg>
+void Context::pushArgs(JS::Value *args, size_t count,
+                       const Arg & arg1) const
+{
+  pushArg(args, arg1);
 }
 
 template <typename Arg>
@@ -68,7 +78,7 @@ bool Context::call(const char* fn, JS::Value* val, const Args&... args)
 {
   JS::Value jsArgs[N];
 
-  pushArg(jsArgs, args...);
+  pushArgs(jsArgs, N, args...);
 
   return realCall(fn, N, jsArgs, val);
 }
