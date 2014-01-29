@@ -27,24 +27,26 @@ public:
 
   friend class AutoCompartment;
 private:
+  bool realCall(const char* fn, int n, JS::Value* args,
+                JS::Value* val) const;
 
   template <typename Arg>
-  void pushArg(JS::Value *args, const Arg & arg);
+  void pushArg(JS::Value *args, const Arg & arg) const;
 
   template <typename Arg, typename... Args>
   void pushArg(JS::Value *args, size_t count,
-               const Arg & arg, const Args&... otherArgs);
+               const Arg & arg, const Args&... otherArgs) const;
+
+  template <typename T>
+  void ToJSArg(JS::Value *val, const T & arg) const;
 
   JSContext* _jsctx;
   JSObject* _global;
 };
 
-template <typename T>
-void ToJSArg(JS::Value *val, const T & arg);
-
 template <typename Arg, typename... Args>
 void Context::pushArg(JS::Value *args, size_t count,
-                      const Arg & arg1, const Args&... otherArgs)
+                      const Arg & arg1, const Args&... otherArgs) const
 {
   pushArg(args, arg1);
   if (count > 1) {
@@ -53,10 +55,13 @@ void Context::pushArg(JS::Value *args, size_t count,
 }
 
 template <typename Arg>
-void Context::pushArg(JS::Value *args, const Arg & arg1)
+void Context::pushArg(JS::Value *args, const Arg & arg1) const
 {
   ToJSArg(args, arg1);
 }
+
+template<>
+bool Context::call<0>(const char* fn, JS::Value* val);
 
 template<int N, typename... Args>
 bool Context::call(const char* fn, JS::Value* val, const Args&... args)
@@ -65,10 +70,7 @@ bool Context::call(const char* fn, JS::Value* val, const Args&... args)
 
   pushArg(jsArgs, args...);
 
-  JSAutoCompartment ac(_jsctx, _global);
-  bool ok = JS_CallFunctionName(_jsctx, _global, fn, N, jsArgs, val);
-
-  return ok;
+  return realCall(fn, N, jsArgs, val);
 }
 
 class AutoCompartment

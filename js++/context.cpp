@@ -4,6 +4,8 @@
   file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+#include <string>
+
 #include <jsapi.h>
 
 #include "context.hpp"
@@ -73,17 +75,45 @@ bool Context::evaluateScript(const char* script, JS::Value* val)
                            "inline", 1, val);
 }
 
+bool Context::realCall(const char* fn, int n, JS::Value* args,
+                       JS::Value* val) const
+{
+  JSAutoCompartment ac(_jsctx, _global);
+  bool ok = JS_CallFunctionName(_jsctx, _global, fn, n, args, val);
+
+  return ok;
+}
+
+template<>
+bool Context::call<0>(const char* fn, JS::Value* val)
+{
+  return realCall(fn, 0, nullptr, val);
+}
 
 template <>
-void ToJSArg<int>(JS::Value *val, const int & arg)
+void Context::ToJSArg<int>(JS::Value *val, const int & arg) const
 {
   *val = INT_TO_JSVAL(arg);
 }
 
 template <>
-void ToJSArg<double>(JS::Value *val, const double & arg)
+void Context::ToJSArg<double>(JS::Value *val, const double & arg) const
 {
   *val = DOUBLE_TO_JSVAL(arg);
 }
 
+template <>
+void Context::ToJSArg<const char*>(JS::Value *val,
+                                   const char* const & arg) const
+{
+  *val = STRING_TO_JSVAL(JS_NewStringCopyZ(_jsctx, arg));
 }
+
+template <>
+void Context::ToJSArg<std::string>(JS::Value *val,
+                                   const std::string & arg) const
+{
+  *val = STRING_TO_JSVAL(JS_NewStringCopyZ(_jsctx, arg.c_str()));
+}
+
+} // ns jspp

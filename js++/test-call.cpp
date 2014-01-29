@@ -28,31 +28,56 @@ int main (int argc, char **argv)
 
 
   if (!ctx->evaluateScript("function plustwo(v) { return v+2; }", &val)) {
-    fprintf(stderr, "Evaluate failed\n");
+    fprintf(stderr, "%d: Evaluate failed\n", __LINE__);
     return 1;
   }
 
-  printf("calling plustwo(40)\n");
+  fprintf(stderr, "%d: calling plustwo(40)\n", __LINE__);
   ctx->call<1>("plustwo", &val, 40);
 
   if (!JSVAL_IS_NUMBER(val)) {
-    fprintf(stderr, "not a number\n");
+    fprintf(stderr, "%d: not a number\n", __LINE__);
     return 1;
   }
 
-  if (JSVAL_TO_INT(val) != 42) {
-    fprintf(stderr, "wrong value. Expected 4, got %d\n", JSVAL_TO_INT(val));
+  if (!JSVAL_IS_INT(val)) {
+    fprintf(stderr, "%d: not an int\n", __LINE__);
     return 1;
   }
 
+  int32_t num = JSVAL_TO_INT(val);
+  if (num != 42) {
+    fprintf(stderr, "%d: wrong value. Expected 42, got %d\n", __LINE__, num);
+    return 1;
+  }
+
+  fprintf(stderr, "calling plustwo(40.0)\n");
   ctx->call<1>("plustwo", &val, 40.0);
   if (!JSVAL_IS_NUMBER(val)) {
-    fprintf(stderr, "not a number\n");
+    fprintf(stderr, "%d: not a number\n", __LINE__);
     return 1;
   }
 
   if (JSVAL_TO_INT(val) != 42) {
-    fprintf(stderr, "wrong value. Expected 4, got %d\n", JSVAL_TO_INT(val));
+    fprintf(stderr, "%d: wrong value. Expected 42, got %d\n", __LINE__, JSVAL_TO_INT(val));
+    return 1;
+  }
+
+  if (!ctx->evaluateScript("function fortytwo() { return 42; }", &val)) {
+    fprintf(stderr, "%d: Evaluate failed\n", __LINE__);
+    return 1;
+  }
+
+  fprintf(stderr, "calling fortytwo()\n");
+  ctx->call<0>("fortytwo", &val);
+  if (!JSVAL_IS_NUMBER(val)) {
+    fprintf(stderr, "%d: not a number\n", __LINE__);
+    return 1;
+  }
+
+  if (JSVAL_TO_INT(val) != 42) {
+    fprintf(stderr, "%d: wrong value. Expected 42, got %d\n", __LINE__,
+            JSVAL_TO_INT(val));
     return 1;
   }
 
