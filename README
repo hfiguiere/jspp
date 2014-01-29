@@ -1,5 +1,14 @@
 A JavaScript/C++ bridge using Mozilla SpiderMonkey 24.
 
+The goal is to hide some of the details of embedding SpiderMonkey
+and provide an easy way to bind C++ classes, possibly with some type
+safety.
+
+Current feature are:
+
+-easier API to execute JS
+-API to call JS functions
+
 Author:
 Hubert Figuiere <hub@figuiere.net>
 
