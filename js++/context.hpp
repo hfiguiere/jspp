@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <string>
+
 #include <jsapi.h>
 
 namespace jspp {
@@ -25,6 +27,9 @@ public:
   template <int N, typename... Args>
   bool call(const char* function, JS::Value* val, const Args&... args);
 
+  template <typename T>
+  T FromJSArg(const JS::Value &val) const;
+
   friend class AutoCompartment;
 private:
   bool realCall(const char* fn, int n, JS::Value* args,
@@ -40,8 +45,10 @@ private:
   void pushArgs(JS::Value *args, size_t count,
                 const Arg & arg1) const;
 
-  template <typename T>
-  void ToJSArg(JS::Value *val, const T & arg) const;
+  void ToJSArg(JS::Value *val, int arg) const;
+  void ToJSArg(JS::Value *val, double arg) const;
+  void ToJSArg(JS::Value *val, const char* arg) const;
+  void ToJSArg(JS::Value *val, const std::string & arg) const;
 
   JSContext* _jsctx;
   JSObject* _global;

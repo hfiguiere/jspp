@@ -102,5 +102,25 @@ int main (int argc, char **argv)
     return 1;
   }
 
+  /* TEST 5: function call with two string arguments returning a string*/
+  if (!ctx->evaluateScript("function concat(a,b) { return a + ' ' + b; }",
+                           &val)) {
+    TEST_OUT("Evaluate failed");
+    return 1;
+  }
+
+  TEST_OUT("calling concat()");
+  ctx->call<2>("concat", &val, "forty", "two");
+  if (!JSVAL_IS_STRING(val)) {
+    TEST_OUT("not a string");
+    return 1;
+  }
+
+  std::string str = ctx->FromJSArg<std::string>(val);
+  if (str != "forty two") {
+    TEST_OUT("expected string not found");
+    return 1;
+  }
+
   return 0;
 }

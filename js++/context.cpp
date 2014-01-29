@@ -90,30 +90,41 @@ bool Context::call<0>(const char* fn, JS::Value* val)
   return realCall(fn, 0, nullptr, val);
 }
 
-template <>
-void Context::ToJSArg<int>(JS::Value *val, const int & arg) const
+void Context::ToJSArg(JS::Value *val, int arg) const
 {
   *val = INT_TO_JSVAL(arg);
 }
 
-template <>
-void Context::ToJSArg<double>(JS::Value *val, const double & arg) const
+void Context::ToJSArg(JS::Value *val, double arg) const
 {
   *val = DOUBLE_TO_JSVAL(arg);
 }
 
-template <>
-void Context::ToJSArg<const char*>(JS::Value *val,
-                                   const char* const & arg) const
+void Context::ToJSArg(JS::Value *val, const char* arg) const
 {
+  JSAutoCompartment ac(_jsctx, _global);
   *val = STRING_TO_JSVAL(JS_NewStringCopyZ(_jsctx, arg));
 }
 
-template <>
-void Context::ToJSArg<std::string>(JS::Value *val,
-                                   const std::string & arg) const
+void Context::ToJSArg(JS::Value *val,
+                      const std::string & arg) const
 {
+  JSAutoCompartment ac(_jsctx, _global);
   *val = STRING_TO_JSVAL(JS_NewStringCopyZ(_jsctx, arg.c_str()));
+}
+
+template <>
+std::string Context::FromJSArg<std::string>(const JS::Value &val) const
+{
+  std::string s;
+  if(!JSVAL_IS_STRING(val)) {
+    return s;
+  }
+  JSString* jss = JSVAL_TO_STRING(val);
+  char* cs = JS_EncodeString(_jsctx, jss);
+  s = cs;
+  JS_free(_jsctx, cs);
+  return s;
 }
 
 } // ns jspp
