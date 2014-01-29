@@ -9,6 +9,7 @@
 
 #include "runtime.hpp"
 #include "context.hpp"
+#include "test-utils.hpp"
 
 int main (int argc, char **argv)
 {
@@ -18,66 +19,68 @@ int main (int argc, char **argv)
   // get context
   std::unique_ptr<jspp::Context> ctx(rt.newContext());
   if (!ctx) {
-    fprintf(stderr, "failed to get context");
+    TEST_OUT("failed to get context");
     return 1;
   }
 
   ctx->initialize();
-  // execute these:
+
   JS::Value val;
 
 
+  /* TEST 1: function call with one int argument */
   if (!ctx->evaluateScript("function plustwo(v) { return v+2; }", &val)) {
-    fprintf(stderr, "%d: Evaluate failed\n", __LINE__);
+    TEST_OUT("Evaluate failed");
     return 1;
   }
 
-  fprintf(stderr, "%d: calling plustwo(40)\n", __LINE__);
+  TEST_OUT("calling plustwo(40)");
   ctx->call<1>("plustwo", &val, 40);
 
   if (!JSVAL_IS_NUMBER(val)) {
-    fprintf(stderr, "%d: not a number\n", __LINE__);
+    TEST_OUT("not a number");
     return 1;
   }
 
   if (!JSVAL_IS_INT(val)) {
-    fprintf(stderr, "%d: not an int\n", __LINE__);
+    TEST_OUT("not an int");
     return 1;
   }
 
   int32_t num = JSVAL_TO_INT(val);
   if (num != 42) {
-    fprintf(stderr, "%d: wrong value. Expected 42, got %d\n", __LINE__, num);
+    TEST_OUT("Wrong value. Expected 42, got %d", num);
     return 1;
   }
 
-  fprintf(stderr, "calling plustwo(40.0)\n");
+  /* TEST 2: function call with one float argument */
+  TEST_OUT("calling plustwo(40.0)");
   ctx->call<1>("plustwo", &val, 40.0);
   if (!JSVAL_IS_NUMBER(val)) {
-    fprintf(stderr, "%d: not a number\n", __LINE__);
+    TEST_OUT("not a number");
     return 1;
   }
 
   if (JSVAL_TO_INT(val) != 42) {
-    fprintf(stderr, "%d: wrong value. Expected 42, got %d\n", __LINE__, JSVAL_TO_INT(val));
+    TEST_OUT("Wrong value. Expected 42, got %d", JSVAL_TO_INT(val));
     return 1;
   }
 
+  /* TEST 3: function call with non argument */
   if (!ctx->evaluateScript("function fortytwo() { return 42; }", &val)) {
-    fprintf(stderr, "%d: Evaluate failed\n", __LINE__);
+    TEST_OUT("Evaluate failed");
     return 1;
   }
 
-  fprintf(stderr, "calling fortytwo()\n");
+  TEST_OUT("calling fortytwo()");
   ctx->call<0>("fortytwo", &val);
   if (!JSVAL_IS_NUMBER(val)) {
-    fprintf(stderr, "%d: not a number\n", __LINE__);
+    TEST_OUT("not a number");
     return 1;
   }
 
   if (JSVAL_TO_INT(val) != 42) {
-    fprintf(stderr, "%d: wrong value. Expected 42, got %d\n", __LINE__,
-            JSVAL_TO_INT(val));
+    TEST_OUT("Wrong value. Expected 42, got %d", JSVAL_TO_INT(val));
     return 1;
   }
 
